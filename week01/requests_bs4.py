@@ -18,25 +18,22 @@ response = requests.get(myurl,headers=header)
 bs_info = bs(response.text, 'html.parser')
 
 movie_list = []
-i = 0
 
-for tags in bs_info.find_all('div', attrs={'class': 'movie-hover-info'}):
-    if i < 3:
-        sub_tag = tags.find_all('div', attrs={'class': 'movie-hover-title'})
-        movie_name = sub_tag[0].find('span', attrs={'class': 'name'}).text
-        movie_type = sub_tag[1].text.replace("\n", "").split(":")[1].strip()
-        movie_time = sub_tag[3].text.replace("\n", "").split(":")[1].strip()
+for tag in bs_info.find_all('div', attrs={'class': 'movie-hover-info'})[0:10]:
+    sub_tag = tag.find_all('div', attrs={'class': 'movie-hover-title'})
+    movie_name = sub_tag[0].find('span', attrs={'class': 'name'}).text
+    movie_type = sub_tag[1].text.replace("\n", "").split(":")[1].strip()
+    release_time = sub_tag[3].text.replace("\n", "").split(":")[1].strip()
 
-        movie_list.append({
-        "电影名称": movie_name,
-        "电影类型": movie_type,
-        "上映时间": movie_time,
-        })
-
-        i += 1
-    else:
-        break
+    print(movie_name)
+    print(movie_type)
+    print(release_time)
     
-            
+    movie_list.append({
+        "name": movie_name,
+        "type": movie_type,
+	    "time": release_time,
+    })
+    
 movie = pd.DataFrame(data = movie_list)
 movie.to_csv('./movie.csv', encoding='utf8', index=False, header=False)
